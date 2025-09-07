@@ -1,0 +1,590 @@
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <title>DataTables + ColumnControl (com Tailwind)</title>
+
+    <!-- Tailwind (só para o visual da página) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link
+      href="https://cdn.datatables.net/columncontrol/1.1.0/css/columnControl.dataTables.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/columncontrol/1.1.0/js/dataTables.columnControl.min.js"></script>
+
+    <!-- Alpine.js -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+
+    <style>
+      div.dt-layout-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin: 0.75em 0;
+      }
+
+      div.dt-container .dt-paging .dt-paging-button:hover {
+        box-sizing: border-box;
+        display: inline-block;
+        min-width: 1.5em;
+        padding: 0.5em 1em;
+        margin-left: 2px;
+        text-align: center;
+        text-decoration: none !important;
+        cursor: pointer;
+        color: inherit !important;
+        border: 1px solid rgba(0, 0, 0, 0);
+        border-radius: 2px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      div.dt-container .dt-paging .dt-paging-button {
+        box-sizing: border-box;
+        display: inline-block;
+        min-width: 1.5em;
+        padding: 0.5em 1em;
+        margin-left: 2px;
+        text-align: center;
+        text-decoration: none !important;
+        cursor: pointer;
+        color: inherit !important;
+        border: 1px solid rgba(0, 0, 0, 0);
+        border-radius: 2px;
+        background: rgba(0, 0, 0, 0);
+      }
+
+      div.dt-container .dt-paging .dt-paging-button.current {
+        box-sizing: border-box;
+        display: inline-block;
+        min-width: 1.5em;
+        padding: 0.5em 1em;
+        margin-left: 2px;
+        text-align: center;
+        text-decoration: none !important;
+        cursor: pointer;
+        color: inherit !important;
+        border: 1px solid rgba(0, 0, 0, 0);
+        border-radius: 2px;
+        background: rgba(255, 255, 0, 0.2);
+      }
+
+      table.dataTable thead > tr > th div.dt-column-header,
+      table.dataTable thead > tr > th div.dt-column-footer,
+      table.dataTable thead > tr > td div.dt-column-header,
+      table.dataTable thead > tr > td div.dt-column-footer,
+      table.dataTable tfoot > tr > th div.dt-column-header,
+      table.dataTable tfoot > tr > th div.dt-column-footer,
+      table.dataTable tfoot > tr > td div.dt-column-header,
+      table.dataTable tfoot > tr > td div.dt-column-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: var(--dt-header-align-items);
+        gap: 4px;
+        height: 40px !important;
+      }
+
+      table.dataTable thead > tr > th div.dt-column-header span.dt-column-title,
+      table.dataTable thead > tr > th div.dt-column-footer span.dt-column-title,
+      table.dataTable thead > tr > td div.dt-column-header span.dt-column-title,
+      table.dataTable thead > tr > td div.dt-column-footer span.dt-column-title,
+      table.dataTable tfoot > tr > th div.dt-column-header span.dt-column-title,
+      table.dataTable tfoot > tr > th div.dt-column-footer span.dt-column-title,
+      table.dataTable tfoot > tr > td div.dt-column-header span.dt-column-title,
+      table.dataTable
+        tfoot
+        > tr
+        > td
+        div.dt-column-footer
+        span.dt-column-title {
+        flex-grow: 1;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+      }
+
+      table.dataTable
+        thead
+        > tr
+        > th
+        div.dt-column-header
+        span.dt-column-title:empty,
+      table.dataTable
+        thead
+        > tr
+        > th
+        div.dt-column-footer
+        span.dt-column-title:empty,
+      table.dataTable
+        thead
+        > tr
+        > td
+        div.dt-column-header
+        span.dt-column-title:empty,
+      table.dataTable
+        thead
+        > tr
+        > td
+        div.dt-column-footer
+        span.dt-column-title:empty,
+      table.dataTable
+        tfoot
+        > tr
+        > th
+        div.dt-column-header
+        span.dt-column-title:empty,
+      table.dataTable
+        tfoot
+        > tr
+        > th
+        div.dt-column-footer
+        span.dt-column-title:empty,
+      table.dataTable
+        tfoot
+        > tr
+        > td
+        div.dt-column-header
+        span.dt-column-title:empty,
+      table.dataTable
+        tfoot
+        > tr
+        > td
+        div.dt-column-footer
+        span.dt-column-title:empty {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        background-color: aqua !important;
+        color: chartreuse !important;
+      }
+
+      div.dt-container div.dt-layout-full {
+        width: 100% !important;
+      }
+
+      div.dt-container .dt-search input {
+        border: 1px solid #aaa;
+        border-radius: 3px;
+        padding: 5px;
+        background-color: transparent;
+        color: inherit;
+        margin-left: 3px;
+      }
+
+      div.dt-container .dt-input {
+        border: 1px solid #aaa;
+        border-radius: 3px;
+        padding: 5px;
+        background-color: transparent;
+        color: inherit;
+      }
+
+      :root {
+        --dtcc-button_background: transparent;
+        --dtcc-button_border: none;
+        --dtcc-button_border-radius: 3px;
+        --dtcc-button_opacity: 0.4;
+        --dtcc-button_padding: 3px;
+        --dtcc-button_disabled-opacity: 0.6;
+        --dtcc-button_empty-opacity: 0.8;
+        --dtcc-button_hover-border: none;
+        --dtcc-button_hover-background: rgba(0, 0, 0, 0.1);
+        --dtcc-button_hover-opacity: 0.9;
+        --dtcc-button-icon_color: black;
+        --dtcc-button-icon_size: 16px;
+        --dtcc-button-icon_margin: 0.5em;
+        --dtcc-dropdown_background: white;
+        --dtcc-dropdown_border: 1px solid rgba(0, 0, 0, 0.2);
+        --dtcc-dropdown_border-radius: 5px;
+        --dtcc-dropdown_box-shadow: 3px 4px 10px 1px rgba(0, 0, 0, 0.3);
+        --dtcc-dropdown_margin: 3px 0 0 0;
+        --dtcc-dropdown_padding: 0.75em 0;
+        --dtcc-dropdown_width: 200px;
+        --dtcc-dropdown_z-index: 2002;
+        --dtcc-dropdown-button_background: transparent;
+        --dtcc-dropdown-button_border: none;
+        --dtcc-dropdown-button_color: black;
+        --dtcc-dropdown-button_padding: 0.5em 1em;
+        --dtcc-dropdown-button_hover-background: rgba(0, 0, 0, 0.05);
+        --dtcc-dropdown-icon_vertical-align: initial;
+        --dtcc-dropdown-search_padding: 0.5em 1em;
+        --dtcc-spacer_border: 1px solid rgba(0, 0, 0, 0.2);
+        --dtcc-spacer_margin: 0.5em;
+        --dtcc-title_background: rgba(255, 255, 255, 0.1);
+        --dtcc-title_border-left: none;
+        --dtcc-title_border-right: none;
+        --dtcc-title_border-top: none;
+        --dtcc-title_border-bottom: ;
+        --dtcc-title_margin: 0;
+        --dtcc-title_padding: 0.5em 0;
+        --dtcc-title_text-align: center;
+        --dtcc-search-icon_color: black;
+        --dtcc-search-icon_hover-background: rgba(0, 0, 0, 0.1);
+        --dtcc-search-icon_opacity: 0.4;
+        --dtcc-search-icon_size: 16px;
+        --dtcc-search-clear_right: 8px;
+        --dtcc-search-clear_bottom: 2px;
+        --dtcc-search-input_margin-top: 0.5em;
+        --dtcc-search-input_padding-right: 24px;
+        --dtcc-search-input_border: 1px solid #aaa;
+        --dtcc-search-input_background-color: var(--dt-html-background);
+        --dtcc-search-input_background: var(--dt-html-background);
+        --dtcc-search-input_border-radius: 3px;
+        --dtcc-search-input_padding: 5px;
+        --dtcc-search-input_flexCalc: 24px;
+        --dtcc-list-buttons_max-height: 300px;
+        --dtcc-list-buttons_background: rgba(0, 0, 0, 0.05);
+      }
+      button {
+        font-style: ;
+        font-variant-ligatures: ;
+        font-variant-caps: ;
+        font-variant-numeric: ;
+        font-variant-east-asian: ;
+        font-variant-alternates: ;
+        font-variant-position: ;
+        font-variant-emoji: ;
+        font-weight: ;
+        font-stretch: ;
+        font-size: ;
+        font-family: ;
+        font-optical-sizing: ;
+        font-size-adjust: ;
+        font-kerning: ;
+        font-feature-settings: ;
+        font-variation-settings: ;
+        text-rendering: auto;
+        color: buttontext;
+        letter-spacing: normal;
+        word-spacing: normal;
+        line-height: normal;
+        text-transform: none;
+        text-indent: 0px;
+        text-shadow: none;
+        text-align: center;
+        cursor: default;
+      }
+    </style>
+
+    <style>
+      .cell-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        line-height: 1.2;
+      }
+      .title {
+        font-weight: 600;
+      }
+      .sub {
+        font-size: 12px;
+        opacity: 0.75;
+      }
+      .pill {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        border: 1px solid #ddd;
+      }
+      .pill--ok {
+        color: #16a34a;
+        border-color: #16a34a;
+      }
+      .pill--warn {
+        color: #d97706;
+        border-color: #d97706;
+      }
+      .pill--err {
+        color: #dc2626;
+        border-color: #dc2626;
+      }
+
+      /* linhas ímpares */
+      tbody > tr:nth-child(odd) {
+        /*background-color: white; 
+        color: black;*/
+      }
+
+      /* linhas pares */
+      tbody > tr:nth-child(even) {
+        /*background-color: #f2f2f2; */
+      }
+
+      tbody tr {
+        border-bottom: solid 1px solid gainsboro;
+      }
+    </style>
+
+    <style>
+      td.details-control {
+        cursor: pointer;
+        background: url("data:image/svg+xml;base64,...") no-repeat center center; /* ícone + */
+      }
+      tr.shown td.details-control {
+        background: url("data:image/svg+xml;base64,...") no-repeat center center; /* ícone – */
+      }
+      d.expander-cell {
+        cursor: pointer;
+      }
+      td.expander-cell .caret {
+        width: 14px;
+        height: 14px;
+        transition: transform 0.18s ease, color 0.18s ease;
+        color: #64748b; /* cor fechada */
+      }
+      tr.dt-hasChild.shown > td.expander-cell .caret {
+        transform: rotate(90deg); /* vira para baixo quando aberto */
+        color: #0ea5e9; /* cor aberta (opcional) */
+      }
+
+      /* opcional: destaque de fundo quando aberto */
+      tr.dt-hasChild.shown > td.expander-cell .cell-stack {
+        background: #f1f5f9;
+        border-radius: 6px;
+        padding: 2px 6px;
+      }
+
+   /* esconda o caret somente quando estiver dentro do span.dtcc-button-text */
+span.dtcc-button-text svg.caret.shrink-0.pointer-events-none {
+  display: none; /* use !important se algum estilo estiver forçando mostrar */
+}
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div class="max-w-6xl mx-auto p-6">
+      <div class="p-4 rounded-lg shadow">
+        <table id="tabela">
+          <thead>
+            <tr>
+              <th class="border ml-4">Cliente</th>
+              <th class="border">Status</th>
+              <th class="border">Valor</th>
+              <th class="border">Data</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        options_dt = {
+          // i18n pt-BR
+          language: {
+            url: "https://cdn.datatables.net/plug-ins/2.3.3/i18n/pt-BR.json",
+
+            // 👇 Traduções específicas do ColumnControl
+            columnControl: {
+              dropdown: "Mais…",
+              orderAsc: "Ordenar crescente",
+              orderDesc: "Ordenar decrescente",
+              orderClear: "Limpar ordenação",
+              orderRemove: "Remover",
+              searchDropdown: "Pesquisar",
+              searchClear: "Limpar filtro",
+              colVis: "Colunas",
+              colVisDropdown: "Visibilidade",
+              reorder: "Reordenar colunas",
+              reorderLeft: "Mover à esquerda",
+              reorderRight: "Mover à direita",
+              list: {
+                all: "Tudo",
+                none: "Nenhum",
+                empty: "Vazio",
+                search: "Buscar…",
+              },
+              search: {
+                number: {
+                  equal: "Igual a",
+                  notEqual: "Diferente de",
+                  greater: "Maior que",
+                  greaterOrEqual: "Maior ou igual",
+                  less: "Menor que",
+                  lessOrEqual: "Menor ou igual",
+                  empty: "Vazio",
+                  notEmpty: "Não vazio",
+                },
+                text: {
+                  contains: "Contém",
+                  notContains: "Não contém",
+                  equal: "Igual a",
+                  notEqual: "Diferente de",
+                  starts: "Começa com",
+                  ends: "Termina com",
+                  empty: "Vazio",
+                  notEmpty: "Não vazio",
+                },
+              },
+            },
+          },
+          order: [[3, "desc"]],
+          pageLength: 5,
+          ordering: {
+            indicators: false,
+            handler: false,
+          },
+          columnControl: ["order", ["searchList"]],
+          columnDefs: [
+            {
+              targets: 1,
+              columnControl: [
+                "order",
+                [
+                  { extend: "searchList", select: true },
+                  "spacer",
+                  "searchClear",
+                ],
+              ],
+            },
+            {
+              targets: 2,
+              columnControl: ["order", ["searchNumber", "searchClear"]],
+            },
+          ],
+        };
+        const openRows = new Set();
+        const table = new DataTable("#tabela", {
+          ajax: {
+            url: "/api/clientes",
+            dataSrc: "data",
+          },
+          createdRow: function (row, data) {
+            const chave = (
+              data.id ?? `${data.codigo}_${data.dataRef}`
+            ).toString();
+            row.id = `row_${chave}`;
+          },
+          columns: [
+            // Cliente – renderiza HTML só para display; para filtro/sort usa texto puro
+            {
+              className: "details-control",
+              data: "cliente",
+              render: (value, type, row) => {
+                if (type === "display") {
+                  return `
+                  <div class="cell-stack flex flex-row items-center gap-2">
+                    <!-- ícone -->
+                    <svg class="caret shrink-0 pointer-events-none"
+                        viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        aria-hidden="true">
+                      <path d="m9 6 6 6-6 6"></path> <!-- chevron-right -->
+                    </svg>
+                    <div>
+                    <div class="title">${row.cliente}</div>
+                    <div class="sub">${row.id}</div>
+                    </div>
+
+                  </div>`;
+                }
+                // 'filter' e 'sort' devolvem o texto simples
+                return value;
+              },
+            },
+            // Status – usa rótulos para display/filter e código para sort
+            {
+              data: "status", // 1,2,3
+              render: (value, type) => {
+                const LABEL =
+                  { 1: "Aprovado", 2: "Pendente", 3: "Erro" }[value] ||
+                  "Pendente";
+                const PILL =
+                  { 1: "pill--ok", 2: "pill--warn", 3: "pill--err" }[value] ||
+                  "pill--warn";
+                if (type === "display")
+                  return `<span  class="pill ${PILL}">${LABEL}</span>`;
+                if (type === "filter") return LABEL; // o searchList enxerga o rótulo
+                return value; // 'sort' e demais: o código numérico
+              },
+            },
+            // Valor – número para sort/filter; BRL só no display
+            {
+              data: "valor",
+              render: (n, type) => {
+                if (type === "display")
+                  return Number(n).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  });
+                return Number(n); // 'filter' e 'sort' como número
+              },
+            },
+            // Data – epoch para sort/filter; dd/mm/aaaa no display
+            {
+              data: "dataEpoch",
+              render: (e, type) => {
+                if (type === "display")
+                  return new Date(e * 1000).toLocaleDateString("pt-BR");
+                return Number(e); // 'filter' e 'sort'
+              },
+            },
+          ],
+          columnControl: ["order", ["searchList"]],
+          columnDefs: [
+            { targets: 0, className: "expander-cell" },
+            {
+              targets: 1,
+              columnControl: [
+                "order",
+                [
+                  { extend: "searchList", select: true },
+                  "spacer",
+                  "searchClear",
+                ],
+              ],
+            },
+            {
+              targets: 2,
+              columnControl: ["order", ["searchNumber", "searchClear"]],
+              type: "num",
+            },
+          ],
+          drawCallback: function () {
+            const api = this.api();
+            openRows.forEach((id) => {
+              const row = api.row("#" + id); // usa o id do <tr>
+              if (row.length && !row.child.isShown()) {
+                row.child(formatRow(row.data())).show();
+                $(row.node()).addClass("shown");
+              }
+            });
+          },
+        });
+
+        setInterval(() => {
+          table.columns(1).columnControl.searchList("refresh");
+          table.ajax.reload(null, false);
+        }, 120000);
+
+        function formatRow(d) {
+          return `
+          <div class="p-3 bg-indigo-400 w-64 h-64">
+          </div>
+        `;
+        }
+
+        $("#tabela tbody").on("click", "td.details-control", function () {
+          const tr = $(this).closest("tr");
+          const row = table.row(tr);
+          const id = tr.attr("id");
+          if (row.child.isShown()) {
+            row.child.hide();
+            tr.removeClass("shown");
+            openRows.delete(id);
+          } else {
+            row.child(formatRow(row.data())).show();
+            tr.addClass("shown");
+            openRows.add(id);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

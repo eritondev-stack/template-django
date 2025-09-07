@@ -1,0 +1,52 @@
+{% load static %}
+{% load nav %} {# nossa tag active #}
+<!doctype html>
+<html lang="pt-br" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <title>{% block title %}App{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'dist/output.css' %}">
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
+
+<script>
+  // Opção A: inicialização “vanilla” (sem escrever jQuery, mas jQuery está presente)
+  document.addEventListener('DOMContentLoaded', () => {
+    new DataTable('#tabela', { pageLength: 10 });
+  });
+  // abre/fecha/erros (opcional)
+  document.addEventListener('htmx:wsOpen',  e => console.log('[OPEN]', e.detail));
+  document.addEventListener('htmx:wsClose', e => console.log('[CLOSE]', e.detail));
+  document.addEventListener('htmx:wsError', e => console.log('[ERROR]', e.detail));
+
+  // mensagens ANTES do HTMX processar (pode cancelar)
+  document.addEventListener('htmx:wsBeforeMessage', (e) => {
+    e.preventDefault(); // impede qualquer swap do HTMX
+    const msg = e.detail.message;
+    if (msg instanceof Blob) {
+      msg.text().then(t => console.log('[MSG]', t));
+    } else {
+      console.log('[MSG]', msg);
+    }
+  });
+
+  
+</script>
+  </head>
+  <body class="h-full bg-gray-50" x-data="{open:true}">
+    <div hx-ext="ws" ws-connect="/ws/updates"></div>
+    <div class="min-h-screen flex">
+      <!-- Sidebar -->
+      <aside class="w-64 border-r bg-white" :class="open ? 'block' : 'hidden'">
+        {% include "componentes/sidebar.html" %}
+      </aside>
+      <!-- Conteúdo -->
+      <main class="flex-1 p-6">
+        <button class="md:hidden mb-4 border px-3 py-1 rounded" @click="open=!open">Menu</button>
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+    
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  </body>
+</html>

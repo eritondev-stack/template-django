@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+  Home
+{% endblock %}
+{% block content %}
+  <h1 class="text-2xl font-semibold mb-4">Real Time</h1>
+  <p>Bem-vindo Eriton!</p>
+  <img class="w-6 h-6" src="{% static 'dashboard/imgs/folder.svg' %}" alt="Logo" />
+  <img class="w-6 h-6" src="{% static 'dashboard/imgs/folder-open.svg' %}" alt="Logo" />
+  {% comment %} <div hx-ext="ws" ws-connect="/ws/updates"></div>
+  <div id="result2"></div> {% endcomment %}
+  <div class="hidden text-tivio" class hx-get="/dashboard/htmx/" hx-target="#result" hx-trigger="every 1s"></div>
+  {% comment %} <div id="result"></div> {% endcomment %}
+
+  {% if nome %}
+    <p class="{{ color }}">Nome: {{ nome }}</p>
+    <p class="text-orange-400">Idade: {{ idade }}</p>
+    <ul>
+      {% for item in lista %}
+        <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="animate-pulse text-gray-400">Carregando...</div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/* Aponta onde procurar as classes */
+@source "./templates";
+@source "./**/templates";
+@source "./static/**/*.{js,ts,tsx}";
+@source "./**/*.py";
+
+
+/* Safelist para todas as variações de texto */
+/*@safelist /text-(.*)-(100|200|300|400|500|600|700|800|900)/;
+@safelist /text-(.*)/;*/
+
+/* Se você quiser estender tema/cores/etc. */
+@theme {
+--color-tivio: blueviolet;   /* azul escuro */
+--color-accent: #9333ea;  /* roxo */
+--color-danger: #dc2626;  /* vermelho */
+--color-brand: #1e40af;
+--font-display: "Inter", sans-serif;
+}

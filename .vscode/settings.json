@@ -1,0 +1,27 @@
+{
+
+
+
+    // Esconde no Explorer
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/*.pyo": true,
+    },
+  
+    // Exclui das buscas
+    "search.exclude": {
+      "**/__pycache__": true,
+      "**/*.pyc": true,
+      "**/*.pyo": true
+    },
+  
+    // Evita que o watcher do VS Code monitore essas pastas
+    "files.watcherExclude": {
+      "**/__pycache__/**": true
+    }
+  
+    // (Opcional – Pylance/Pyright) não analisar esses diretórios
+    // "python.analysis.exclude": ["**/__pycache__/**"]
+  }
+  

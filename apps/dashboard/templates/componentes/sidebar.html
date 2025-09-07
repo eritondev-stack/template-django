@@ -1,0 +1,15 @@
+{% load nav %}
+<nav class="p-4 space-y-1 text-sm">
+    <a href="{% url 'apps.dashboard:home' %}"
+       class="block rounded px-3 py-2 hover:bg-gray-100 {% active 'home' %}">
+      🏠 Home
+    </a>
+    <a href="{% url 'apps.dashboard:contato' %}"
+       class="block rounded px-3 py-2 hover:bg-gray-100 {% active 'contato' %}">
+      ✉️ Contato
+    </a>
+    <a href="{% url 'apps.dashboard:real-time' %}"
+    class="block rounded px-3 py-2 hover:bg-gray-100 {% active 'real-time' %}">
+      ✉️ Real Time
+    </a>
+  </nav>
